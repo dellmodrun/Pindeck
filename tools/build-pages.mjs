@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const output = path.join(root, '_site');
-const basePath = '/Pindeck/';
+const basePath = '/';
 const publicEntries = [
   'index.html',
   '_next',
