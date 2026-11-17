@@ -1,0 +1,43 @@
+html:not([data-pindeck-ready]) body {
+  opacity: 0 !important;
+  animation: pindeck-body-fallback 0s 8s forwards;
+}
+
+html:not([data-pindeck-ready])::before,
+html:not([data-pindeck-ready])::after {
+  position: fixed;
+  z-index: 2147483647;
+  pointer-events: none;
+}
+
+html:not([data-pindeck-ready])::before {
+  content: "";
+  inset: 0;
+  background: #000 url("/pindeck-logo.png") center calc(50% - 24px) / 72px 72px no-repeat;
+  animation: pindeck-boot-fallback 0s 8s forwards;
+}
+
+html:not([data-pindeck-ready])::after {
+  content: "PINDECK · BOOTING TERMINAL";
+  top: calc(50% + 38px);
+  left: 50%;
+  color: #ffe500;
+  font: 700 11px/1.4 ui-monospace, "Cascadia Mono", monospace;
+  letter-spacing: .14em;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: pindeck-boot-pulse 1s steps(2, end) infinite, pindeck-boot-fallback 0s 8s forwards;
+}
+
+html[data-pindeck-ready] body {
+  opacity: 1;
+  transition: opacity .2s ease-out;
+}
+
+@keyframes pindeck-body-fallback { to { opacity: 1; } }
+@keyframes pindeck-boot-fallback { to { opacity: 0; visibility: hidden; } }
+@keyframes pindeck-boot-pulse { 50% { opacity: .45; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-pindeck-ready])::after { animation: pindeck-boot-fallback 0s 8s forwards; }
+}

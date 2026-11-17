@@ -18,9 +18,10 @@ const publicEntries = [
   'twitter-image.png',
   'pindeck-logo.png',
   'pindeck-brand.js',
+  'pindeck-boot.css',
 ];
 const textExtensions = new Set(['.html', '.css', '.js', '.json', '.svg', '.txt', '.webmanifest']);
-const rootAsset = /(["'`(])\/(?!\/|Pindeck\/)(_next\/|emulator\/|assets\/|apple-icon\.png|icon\.svg|icon[123]\.png|opengraph-image\.png|twitter-image\.png|pindeck-logo\.png|pindeck-brand\.js)/g;
+const rootAsset = /(["'`(])\/(?!\/|Pindeck\/)(_next\/|emulator\/|assets\/|apple-icon\.png|icon\.svg|icon[123]\.png|opengraph-image\.png|twitter-image\.png|pindeck-logo\.png|pindeck-brand\.js|pindeck-boot\.css)/g;
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });

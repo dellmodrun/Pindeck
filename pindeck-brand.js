@@ -250,6 +250,7 @@
     }
 
     installLiveCa();
+    document.documentElement.setAttribute('data-pindeck-ready', '');
   }
 
   window.addEventListener('load', () => {
