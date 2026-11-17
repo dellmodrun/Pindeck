@@ -49,6 +49,9 @@
   function renderLiveCa(value) {
     liveCa = normalizeCa(value) || 'tba';
     const copyable = isSolanaAddress(liveCa);
+    document.querySelectorAll('a.link[href="#token"]').forEach(link => {
+      link.textContent = copyable ? `CA · ${shortCa(liveCa, 4)}` : 'CA · TBA';
+    });
     document.querySelectorAll('button[aria-label*="contract address" i], button[data-pindeck-ca]').forEach(button => {
       button.dataset.pindeckCa = 'true';
       button.disabled = !copyable;
