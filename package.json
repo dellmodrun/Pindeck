@@ -1,8 +1,8 @@
 {
-  "name": "homemadebadge-local",
+  "name": "pindeck",
   "version": "1.0.0",
   "private": true,
-  "description": "Local static deployment of Homemade Badge",
+  "description": "Pindeck static website",
   "scripts": {
     "start": "node server.js",
     "build:pages": "node tools/build-pages.mjs"

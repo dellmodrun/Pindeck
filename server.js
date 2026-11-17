@@ -52,5 +52,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, '127.0.0.1', () => {
-  console.log(`Homemade Badge is running at http://127.0.0.1:${port}`);
+  console.log(`Pindeck is running at http://127.0.0.1:${port}`);
 });
