@@ -24,3 +24,12 @@ npm run build:pages
 - 代币 ticker：`$PINDECK`
 - CA：`TBA`（尚未发布）
 - X：<https://x.com/pindeckinc>
+
+## CA 热更新
+
+CA 保存在独立的 Supabase 配置表中，页面使用 Realtime 订阅并以 1 秒轮询作为回退；更新 CA 不需要重新部署 GitHub Pages。
+
+```powershell
+npm run update:ca -- <Solana address>
+npm run update:ca -- tba
+```

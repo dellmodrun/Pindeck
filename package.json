@@ -5,6 +5,7 @@
   "description": "Pindeck static website",
   "scripts": {
     "start": "node server.js",
-    "build:pages": "node tools/build-pages.mjs"
+    "build:pages": "node tools/build-pages.mjs",
+    "update:ca": "node tools/update-ca.mjs"
   }
 }

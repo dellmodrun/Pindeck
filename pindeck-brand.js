@@ -1,4 +1,11 @@
 (() => {
+  const SUPABASE_URL = 'https://snwthyespgghvvlktyyu.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_lok_cbkXwfsPKEpOTTCl4Q_6aqpNf0v';
+  const CA_TABLE = 'pindeck_site_config';
+  let liveCa = 'tba';
+  let liveCaStarted = false;
+  let liveCaClient = null;
+
   const replacements = [
     ['HOMEMADE BADGE', 'PINDECK'],
     ['Homemade Badge', 'Pindeck'],
@@ -22,6 +29,128 @@
       let value = node.nodeValue;
       for (const [from, to] of replacements) value = value.replaceAll(from, to);
       if (value !== node.nodeValue) node.nodeValue = value;
+    }
+  }
+
+  function isSolanaAddress(value) {
+    return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value || '');
+  }
+
+  function normalizeCa(value) {
+    value = String(value || '').trim();
+    if (isSolanaAddress(value)) return value;
+    return value.toLowerCase() === 'tba' ? 'tba' : '';
+  }
+
+  function shortCa(value, width) {
+    return value.slice(0, width) + '..' + value.slice(-width);
+  }
+
+  function renderLiveCa(value) {
+    liveCa = normalizeCa(value) || 'tba';
+    const copyable = isSolanaAddress(liveCa);
+    document.querySelectorAll('button[aria-label*="contract address" i], button[data-pindeck-ca]').forEach(button => {
+      button.dataset.pindeckCa = 'true';
+      button.disabled = !copyable;
+      button.title = copyable ? 'Copy the official Pindeck contract address' : 'Contract address to be announced';
+      button.setAttribute('aria-label', copyable ? `Pindeck contract address: ${liveCa}` : 'Pindeck contract address is to be announced');
+
+      for (const span of button.querySelectorAll('span')) {
+        if (span.classList.contains('label')) {
+          span.textContent = 'CA';
+        } else if (span.classList.contains('cta-ar')) {
+          span.textContent = copyable ? 'COPY CA' : 'TBA';
+        } else if (!span.children.length && span.textContent.trim()) {
+          if (!copyable) span.textContent = 'TBA';
+          else if (span.className.includes('sm:inline')) span.textContent = liveCa;
+          else if (span.className.includes('sm:hidden')) span.textContent = shortCa(liveCa, 6);
+          else span.textContent = shortCa(liveCa, 4);
+        }
+      }
+
+      if (button.dataset.pindeckCopyInstalled !== 'true') {
+        button.dataset.pindeckCopyInstalled = 'true';
+        button.addEventListener('click', async event => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          if (!isSolanaAddress(liveCa) || !navigator.clipboard) return;
+          try {
+            await navigator.clipboard.writeText(liveCa);
+            const label = button.querySelector('.label');
+            if (label) {
+              label.textContent = 'COPIED';
+              window.setTimeout(() => { label.textContent = 'CA'; }, 1200);
+            }
+          } catch {}
+        }, true);
+      }
+    });
+  }
+
+  async function fetchLiveCa() {
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/${CA_TABLE}?id=eq.main&select=contract_address,updated_at`,
+        {
+          headers: {
+            apikey: SUPABASE_PUBLISHABLE_KEY,
+            accept: 'application/json',
+            'cache-control': 'no-cache'
+          },
+          cache: 'no-store'
+        }
+      );
+      if (!response.ok) throw new Error(`CA request returned ${response.status}`);
+      const rows = await response.json();
+      if (rows && rows[0]) renderLiveCa(rows[0].contract_address);
+    } catch (error) {
+      console.warn('Pindeck CA could not be refreshed.', error);
+    }
+  }
+
+  function loadSupabase() {
+    if (window.supabase?.createClient) return Promise.resolve(window.supabase);
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-pindeck-supabase]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.supabase), { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = '/assets/supabase-js.min.js';
+      script.async = true;
+      script.dataset.pindeckSupabase = 'true';
+      script.onload = () => resolve(window.supabase);
+      script.onerror = reject;
+      document.head.append(script);
+    });
+  }
+
+  async function installLiveCa() {
+    if (liveCaStarted) return;
+    liveCaStarted = true;
+    renderLiveCa('tba');
+    await fetchLiveCa();
+    window.addEventListener('focus', fetchLiveCa);
+    window.setInterval(fetchLiveCa, 1000);
+
+    try {
+      const library = await loadSupabase();
+      liveCaClient = library.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+      });
+      liveCaClient
+        .channel('pindeck-ca-live')
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: CA_TABLE,
+          filter: 'id=eq.main'
+        }, payload => renderLiveCa(payload.new?.contract_address))
+        .subscribe();
+    } catch (error) {
+      console.warn('Pindeck realtime CA is temporarily unavailable.', error);
     }
   }
 
@@ -59,11 +188,7 @@
       }
     }
 
-    for (const button of document.querySelectorAll('button[aria-label*="contract address" i]')) {
-      button.disabled = true;
-      button.title = 'Contract address to be announced';
-      button.setAttribute('aria-label', 'Contract address to be announced');
-    }
+    renderLiveCa(liveCa);
 
     const metadata = {
       'meta[name="application-name"]': ['content', 'Pindeck'],
@@ -82,6 +207,8 @@
       icon.href = '/pindeck-logo.png';
       icon.type = 'image/png';
     }
+
+    installLiveCa();
   }
 
   window.addEventListener('load', () => {
