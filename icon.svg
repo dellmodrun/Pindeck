@@ -1,15 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-<title>Pindeck</title>
-<rect x="2" y="6" width="28" height="21" rx="4" fill="#a3161c"/>
-<rect x="2" y="5" width="28" height="21" rx="4" fill="#e0262d"/>
-<rect x="8" y="7" width="18" height="17" rx="2" fill="#0b3a8f"/>
-<circle cx="5" cy="8" r="1" fill="#0d0f12"/>
-<circle cx="28" cy="8" r="1" fill="#0d0f12"/>
-<circle cx="5" cy="23" r="1" fill="#0d0f12"/>
-<circle cx="28" cy="23" r="1" fill="#0d0f12"/>
-<rect x="4" y="12" width="2" height="1" fill="#f5d90a"/>
-<rect x="4" y="14" width="2" height="1" fill="#f5d90a"/>
-<rect x="4" y="16" width="2" height="1" fill="#f5d90a"/>
-<rect x="4" y="18" width="2" height="1" fill="#f5d90a"/>
-<path fill="#35d6e6" d="M12 9h4v2h-4zM18 9h4v2h-4zM10 11h14v2h-14zM10 13h14v2h-14zM12 15h10v2h-10zM14 17h6v2h-6zM16 19h2v2h-2z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Pindeck</title>
+  <rect width="64" height="64" rx="12" fill="#ffe500"/>
+  <g stroke="#111" stroke-width="4" stroke-linejoin="round">
+    <path fill="#fff9f1" d="M7 35l9-6 5 5-9 8zM48 38l5-4 6 7-9 7-5-6z"/>
+    <path fill="#e9272f" d="M16 24l18-11 20 12v17L36 53 16 41z"/>
+    <path fill="#ff4148" d="M16 24l18-11 20 12-18 12z"/>
+    <path fill="#d81f28" d="M36 37l18-12v17L36 53z"/>
+    <path fill="#124fa7" d="M26 24l9-5 10 6-9 6z"/>
+  </g>
 </svg>
